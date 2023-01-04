@@ -1,0 +1,84 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace tankDualBattle
+{
+    public partial class GameScreen : Form
+    {
+        bool driveF, driveB, turnR, turnL, gameOver;
+        string facin = "right";
+        byte ammoBalance = 30, kill;
+        sbyte speed = 10;
+
+        public GameScreen()
+        {
+            InitializeComponent();
+            Cursor = new Cursor(Application.StartupPath + "\\Gray Scale 2.cur");
+            T3476Hull.Controls.Add(T3476GunTurret);
+            T3476GunTurret.Location = new Point(133, 128);
+        }
+
+        private void MainTimerEvent_Tick(object sender, EventArgs e)
+        {
+            if (driveF == true && T3476Hull.Left + T3476Hull.Width < ClientSize.Width + 29)
+            {
+                T3476Hull.Left += speed;
+            }
+            if (driveB == true && T3476Hull.Left > 5)
+            {
+                T3476Hull.Left -= speed;
+            }
+        }
+
+        private void KeyIsDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.W:
+                    facin = facin;
+                    driveF = true;
+                    break;
+                case Keys.S:
+                    driveB = true;
+                    break;
+                case Keys.Y:
+                    if (ammoBalance > 0)
+                    {
+                        ShootProjectile(facin);
+                        ammoBalance--;
+                    }
+                    txtAmmoBalance.Text = "Ammo: " + ammoBalance;
+                    txtScore.Text = "Zabití: " + kill;
+                    break;
+            }
+        }
+
+        private void KeyIsUp(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.W:
+                    driveF = false;
+                    break;
+                case Keys.S:
+                    driveB = false;
+                    break;
+            }
+        }
+        private void ShootProjectile(string direction)
+        {
+            Projectile shootProjectile = new Projectile();
+            shootProjectile.direction = direction;
+            shootProjectile.projectileL = T3476Hull.Left + (T3476Hull.Width / 2);
+            shootProjectile.projectileT = T3476Hull.Top + (T3476Hull.Height / 2);
+            shootProjectile.MakeProjectile(this);
+        }
+    }
+}
